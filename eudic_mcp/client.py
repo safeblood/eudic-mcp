@@ -242,3 +242,90 @@ def list_mastered_words(
     if category_id is not None:
         params["category_id"] = category_id
     return _request("GET", "/studylist/mastered_words", token=token, params=params)
+
+
+# ---------------------------------------------------------------------------
+# 笔记（note）管理
+# ---------------------------------------------------------------------------
+
+
+def list_notes(
+    language: str = DEFAULT_LANGUAGE,
+    page: int = 0,
+    page_size: int = 100,
+    token: str | None = None,
+) -> dict[str, Any]:
+    """获取所有单词笔记列表。"""
+    return _request(
+        "GET",
+        "/studylist/notes",
+        token=token,
+        params={
+            "language": language,
+            "page": page,
+            "page_size": page_size,
+        },
+    )
+
+
+def get_note(
+    word: str, language: str = DEFAULT_LANGUAGE, token: str | None = None
+) -> dict[str, Any]:
+    """获取某个单词的笔记。"""
+    return _request(
+        "GET",
+        "/studylist/note",
+        token=token,
+        params={"language": language, "word": word},
+    )
+
+
+def add_note(
+    word: str,
+    note: str,
+    language: str = DEFAULT_LANGUAGE,
+    token: str | None = None,
+) -> dict[str, Any]:
+    """为某个单词添加或更新笔记。"""
+    return _request(
+        "POST",
+        "/studylist/note",
+        token=token,
+        payload={"language": language, "word": word, "note": note},
+    )
+
+
+def delete_note(
+    word: str, language: str = DEFAULT_LANGUAGE, token: str | None = None
+) -> dict[str, Any]:
+    """删除某个单词的笔记。"""
+    return _request(
+        "DELETE",
+        "/studylist/note",
+        token=token,
+        payload={"language": language, "word": word},
+    )
+
+
+# ---------------------------------------------------------------------------
+# 例句（sentence）管理
+# ---------------------------------------------------------------------------
+
+
+def list_sentences(
+    language: str = DEFAULT_LANGUAGE,
+    page: int = 0,
+    page_size: int = 100,
+    token: str | None = None,
+) -> dict[str, Any]:
+    """获取用户例句列表。"""
+    return _request(
+        "GET",
+        "/studylist/sentences",
+        token=token,
+        params={
+            "language": language,
+            "page": page,
+            "page_size": page_size,
+        },
+    )

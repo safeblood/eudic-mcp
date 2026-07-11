@@ -19,14 +19,19 @@ from mcp.types import TextContent, Tool
 
 from .client import (
     EudicError,
+    add_note,
     add_word,
     add_words_bulk,
     create_category,
     delete_category,
+    delete_note,
     delete_words,
+    get_note,
     get_word,
     list_categories,
     list_mastered_words,
+    list_notes,
+    list_sentences,
     list_words,
     rename_category,
 )
@@ -208,6 +213,67 @@ TOOLS: list[Tool] = [
             },
         },
     ),
+    Tool(
+        name="eudic_list_notes",
+        description="获取所有单词笔记列表。",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "language": {"type": "string", "default": "en"},
+                "page": {"type": "integer", "default": 0},
+                "page_size": {"type": "integer", "default": 100},
+            },
+        },
+    ),
+    Tool(
+        name="eudic_get_note",
+        description="获取某个单词的笔记。",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "word": {"type": "string", "description": "单词"},
+                "language": {"type": "string", "default": "en"},
+            },
+            "required": ["word"],
+        },
+    ),
+    Tool(
+        name="eudic_add_note",
+        description="为某个单词添加或更新笔记。",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "word": {"type": "string", "description": "单词"},
+                "note": {"type": "string", "description": "笔记内容"},
+                "language": {"type": "string", "default": "en"},
+            },
+            "required": ["word", "note"],
+        },
+    ),
+    Tool(
+        name="eudic_delete_note",
+        description="删除某个单词的笔记。",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "word": {"type": "string", "description": "单词"},
+                "language": {"type": "string", "default": "en"},
+            },
+            "required": ["word"],
+        },
+    ),
+    Tool(
+        name="eudic_list_sentences",
+        description="获取用户例句列表。",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "language": {"type": "string", "default": "en"},
+                "page": {"type": "integer", "default": 0},
+                "page_size": {"type": "integer", "default": 100},
+            },
+        },
+    ),
 ]
 
 
@@ -239,6 +305,16 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
             result = get_word(**arguments)
         elif name == "eudic_list_mastered_words":
             result = list_mastered_words(**arguments)
+        elif name == "eudic_list_notes":
+            result = list_notes(**arguments)
+        elif name == "eudic_get_note":
+            result = get_note(**arguments)
+        elif name == "eudic_add_note":
+            result = add_note(**arguments)
+        elif name == "eudic_delete_note":
+            result = delete_note(**arguments)
+        elif name == "eudic_list_sentences":
+            result = list_sentences(**arguments)
         else:
             return [TextContent(type="text", text=f"未知工具: {name}")]
     except EudicError as exc:

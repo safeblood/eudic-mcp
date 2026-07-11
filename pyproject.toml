@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "eudic-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "Model Context Protocol server for Eudic study list API"
 readme = "README.md"
 license = { text = "MIT" }
