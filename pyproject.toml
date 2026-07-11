@@ -31,9 +31,9 @@ dependencies = [
 eudic-mcp = "eudic_mcp.server:main"
 
 [project.urls]
-Homepage = "https://github.com/YOUR_USERNAME/eudic-mcp"
-Repository = "https://github.com/YOUR_USERNAME/eudic-mcp"
-Issues = "https://github.com/YOUR_USERNAME/eudic-mcp/issues"
+Homepage = "https://github.com/safeblood/eudic-mcp"
+Repository = "https://github.com/safeblood/eudic-mcp"
+Issues = "https://github.com/safeblood/eudic-mcp/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["eudic_mcp"]

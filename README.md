@@ -20,7 +20,7 @@ pip install eudic-mcp
 或从源码安装：
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/eudic-mcp.git
+git clone https://github.com/safeblood/eudic-mcp.git
 cd eudic-mcp
 pip install -e .
 ```
