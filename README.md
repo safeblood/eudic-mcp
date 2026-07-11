@@ -2,7 +2,7 @@
 
 欧路词典（Eudic）生词本 API 的 [Model Context Protocol](https://modelcontextprotocol.io/) 封装。
 
-支持 Claude Desktop、Cursor 等兼容 MCP 的客户端直接管理 Eudic 生词本分组与单词。
+支持 Claude Desktop、Cursor、Kimi Code 等兼容 MCP 的客户端直接管理 Eudic 生词本分组与单词。
 
 ## 功能
 
@@ -13,11 +13,13 @@
 
 ## 安装
 
+### 从 PyPI 安装（暂未发布）
+
 ```bash
 pip install eudic-mcp
 ```
 
-或从源码安装：
+### 从源码安装
 
 ```bash
 git clone https://github.com/safeblood/eudic-mcp.git
@@ -25,21 +27,63 @@ cd eudic-mcp
 pip install -e .
 ```
 
+### 不安装，直接运行源码
+
+如果你不想安装到系统 Python，可以设置 `PYTHONPATH` 指向项目目录：
+
+```bash
+export PYTHONPATH="/path/to/eudic-mcp"
+python -m eudic_mcp.server
+```
+
 ## 配置
 
 需要欧路词典 OpenAPI Token。获取方式见 [Eudic OpenAPI 文档](https://my.eudic.net/OpenAPI/doc_api_study)。
 
-设置环境变量：
+**注意**：Token 只填 `NIS` 后面的字符串部分，不要带 `NIS ` 前缀。本客户端会自动拼上 `NIS `。
 
 ```bash
+# 错误
 export EUDIC_API_TOKEN="NIS xxxx"
+
+# 正确
+export EUDIC_API_TOKEN="xxxx"
 ```
 
 Windows PowerShell：
 
 ```powershell
-$env:EUDIC_API_TOKEN="NIS xxxx"
+$env:EUDIC_API_TOKEN="xxxx"
 ```
+
+## 在 Kimi Code 中使用
+
+编辑 Kimi Code 的 MCP 配置文件：
+
+- Windows: `C:\Users\<用户名>\.kimi-code\mcp.json`
+- macOS/Linux: `~/.kimi-code/mcp.json`
+
+添加或替换 `eudic` server：
+
+```json
+{
+  "mcpServers": {
+    "eudic": {
+      "command": "python",
+      "args": [
+        "-m",
+        "eudic_mcp.server"
+      ],
+      "env": {
+        "PYTHONPATH": "C:/Users/83773/Downloads/pte/eudic-mcp",
+        "EUDIC_API_TOKEN": "你的token"
+      }
+    }
+  }
+}
+```
+
+修改后**重启 Kimi Code** 生效。
 
 ## 在 Claude Desktop 中使用
 
@@ -48,13 +92,35 @@ $env:EUDIC_API_TOKEN="NIS xxxx"
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
+### 已安装包
+
 ```json
 {
   "mcpServers": {
     "eudic": {
       "command": "eudic-mcp",
       "env": {
-        "EUDIC_API_TOKEN": "NIS xxxx"
+        "EUDIC_API_TOKEN": "你的token"
+      }
+    }
+  }
+}
+```
+
+### 直接运行源码
+
+```json
+{
+  "mcpServers": {
+    "eudic": {
+      "command": "python",
+      "args": [
+        "-m",
+        "eudic_mcp.server"
+      ],
+      "env": {
+        "PYTHONPATH": "C:/Users/83773/Downloads/pte/eudic-mcp",
+        "EUDIC_API_TOKEN": "你的token"
       }
     }
   }
@@ -76,6 +142,63 @@ $env:EUDIC_API_TOKEN="NIS xxxx"
 | `eudic_get_word` | 查询单个单词 |
 | `eudic_list_mastered_words` | 查询已掌握单词 |
 
+## 工具调用示例
+
+### 创建生词本分组
+
+```json
+{
+  "name": "wfd",
+  "language": "en"
+}
+```
+
+返回示例：
+
+```json
+{
+  "data": {
+    "id": "132314173819830130",
+    "language": "en",
+    "name": "wfd"
+  },
+  "message": ""
+}
+```
+
+### 批量导入单词
+
+```json
+{
+  "words": ["hypothesis", "methodology", "empirical"],
+  "category_id": "132314173819830130",
+  "language": "en"
+}
+```
+
+### 添加单个单词（带语境）
+
+```json
+{
+  "word": "hypothesis",
+  "category_ids": ["132314173819830130"],
+  "star": 3,
+  "context_line": "This hypothesis needs more evidence.",
+  "language": "en"
+}
+```
+
+### 列出分组单词
+
+```json
+{
+  "category_id": "132314173819830130",
+  "page": 0,
+  "page_size": 100,
+  "language": "en"
+}
+```
+
 ## 作为 Python 库使用
 
 ```python
@@ -85,6 +208,16 @@ cat = create_category("wfd")
 cat_id = cat["data"]["id"]
 
 add_words_bulk(["hypothesis", "methodology"], category_id=cat_id)
+```
+
+## 开发
+
+```bash
+cd eudic-mcp
+pip install -e .
+
+# 手动启动 server
+EUDIC_API_TOKEN="你的token" eudic-mcp
 ```
 
 ## 依赖
